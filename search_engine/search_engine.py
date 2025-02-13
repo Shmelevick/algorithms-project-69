@@ -1,6 +1,9 @@
 import re
 
-def search(docs, word):
+def search(docs: list, word: str) -> list:
+    """
+    Searches for a word in the documents and returns their IDs.
+    """
     result = []
     word = word.lower()
     for doc in docs:
