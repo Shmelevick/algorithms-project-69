@@ -1,0 +1,31 @@
+# Виртуальное окружение
+.venv/
+venv/
+
+# Кэш и временные файлы Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Конфигурации среды
+.python-version
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Файлы зависимостей, создаваемые инструментами
+uv.lock
+
+# IDE и редакторы
+.vscode/
+.idea/
+*.iml
+
+# Файлы OS
+.DS_Store
+Thumbs.db
+

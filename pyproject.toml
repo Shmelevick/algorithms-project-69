@@ -1,0 +1,10 @@
+[project]
+name = "algorithms-project-69"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pytest>=8.3.4",
+    "ruff>=0.9.6",
+]
