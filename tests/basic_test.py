@@ -9,51 +9,60 @@ docs = [
     {'id': 5, 'text': 'goodbye java'}
 ]
 
-@pytest.mark.parametrize(
-    'docs, word, res',
-    [
-        (docs, 'java', [5]),
-        (docs, 'world', [1, 3]),
-        (docs, 'hello', [1, 2]),
-    ]
-)
-def test_search_single_word_found(docs, word, res):
-    """
-    Test the search function to ensure it finds a single word correctly.
-    """
-    assert search(docs, word) == res, f"Expected {res}, but got {search(docs, word)}"
 
-@pytest.mark.parametrize(
-    'docs, word, res',
-    [
-        (docs, 'javascript', []),
-        (docs, 'goodmorning', []),
-        (docs, 'computer', []),
-    ]
-)
-def test_search_absent_word_not_found(docs, word, res):
+class TestSearchFunction:
     """
-    Test that the search function returns an empty list for absent words.
+    Test the search function to ensure it handles various cases, including:
+    - Finding words correctly.
+    - Returning empty lists for absent words.
+    - Not matching partial words.
+    - Handling empty or whitespace-only search queries.
     """
-    assert search(docs, word) == res, f"Expected [], but got {search(docs, word)}"
+    @pytest.mark.parametrize(
+        'docs, word, res',
+        [
+            (docs, 'java', [5]),
+            (docs, 'world', [1, 3]),
+            (docs, 'hello', [1, 2]),
+        ]
+    )
+    def test_search_single_word_found(self, docs, word, res):
+        """
+        Test the search function to ensure it finds a single word correctly.
+        """
+        assert search(docs, word) == res, f"Expected {res}, but got {search(docs, word)}"
 
-@pytest.mark.parametrize(
-    'docs, word, res',
-    [
-        (docs, 'he', []),
-        (docs, 'hell', []),
-        (docs, 'o', []),
-    ]
-)
-def test_search_part_of_word_not_found(docs, word, res):
-    """
-    Test that the search function does not return results for partial words.
-    """
-    assert search(docs, word) == res, f"Expected [], but got {search(docs, word)}"
+    @pytest.mark.parametrize(
+        'docs, word, res',
+        [
+            (docs, 'javascript', []),
+            (docs, 'goodmorning', []),
+            (docs, 'computer', []),
+        ]
+    )
+    def test_search_absent_word_not_found(self, docs, word, res):
+        """
+        Test that the search function returns an empty list for absent words.
+        """
+        assert search(docs, word) == res, f"Expected [], but got {search(docs, word)}"
 
-@pytest.mark.parametrize('word', ['', ' ', '\t', '\n'])
-def test_search_empty_word(word):
-    """
-    Test that the search function returns an empty list for empty or whitespace-only queries.
-    """
-    assert search(docs, word) == [], f'Expected [], but got {search(docs, word)}'
+    @pytest.mark.parametrize(
+        'docs, word, res',
+        [
+            (docs, 'he', []),
+            (docs, 'hell', []),
+            (docs, 'o', []),
+        ]
+    )
+    def test_search_part_of_word_not_found(self, docs, word, res):
+        """
+        Test that the search function does not return results for partial words.
+        """
+        assert search(docs, word) == res, f"Expected [], but got {search(docs, word)}"
+
+    @pytest.mark.parametrize('word', ['', ' ', '\t', '\n'])
+    def test_search_empty_word(self, word):
+        """
+        Test that the search function returns an empty list for empty or whitespace-only queries.
+        """
+        assert search(docs, word) == [], f'Expected [], but got {search(docs, word)}'
