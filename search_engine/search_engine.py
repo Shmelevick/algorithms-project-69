@@ -6,11 +6,16 @@ def search(docs: list, word: str) -> list:
     """
     def preprocess(text):
         return re.sub(r'[^\w\s]', '', text).lower()
-    
+
     result = []
     word = preprocess(word)
+
     for doc in docs:
         cleaned_text = preprocess(doc['text'])
-        if word in cleaned_text.split():
-            result.append(doc['id'])
-    return result
+        word_count = cleaned_text.split().count(word)
+
+        if word_count:
+            result.append((doc['id'], word_count))
+
+    result.sort(key=lambda x: x[1], reverse=True)
+    return [id for id, _ in result]
