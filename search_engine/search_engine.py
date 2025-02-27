@@ -6,7 +6,7 @@ from pprint import pprint
 
 
 def preprocess(text):
-    return re.sub(r'[^\w\s]', '', text).lower()
+    return re.sub(r'[^\w\s]|(?<!\w)_', '', text).lower()
 
 
 def search(docs: list, words: str) -> list:
