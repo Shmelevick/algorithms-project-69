@@ -66,3 +66,14 @@ class TestSearchFunction:
         Test that the search function returns an empty list for empty or whitespace-only queries.
         """
         assert search(docs, word) == [], f'Expected [], but got {search(docs, word)}'
+
+
+    def test_with_punctuation(self):
+        """
+        Test that the search word can be with puntcuation
+        """
+        doc1 = {'id': 'doc1', 'text': "I can't shoot straight unless I've had a pint!"}
+        docs = [doc1]
+
+        assert search(docs, 'pint') == ['doc1']
+        assert search(docs, 'pint!') == ['doc1']
