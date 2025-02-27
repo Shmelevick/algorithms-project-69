@@ -1,5 +1,5 @@
 import pytest
-from search_engine.search_engine import search
+from search_engine.search_engine import preprocess, search, get_inverted_index
 
 docs = [
     {'id': 1, 'text': 'hello world'},
@@ -118,3 +118,17 @@ class TestSearchFunction:
 
         result = search(docs, 'shoot at me')
         assert result == ['doc2', 'doc1']
+
+    
+    def test_get_inverted_index(self):
+        doc1 = {'id': 'doc1', 'text': 'some text'}
+        doc2 = {'id': 'doc2', 'text': 'some text too'}
+        docs = [doc1, doc2]
+
+        index = {
+            'some': ['doc1', 'doc2'],
+            'text': ['doc1', 'doc2'],
+            'too': ['doc2']
+        }
+        
+        assert get_inverted_index(docs) == index
