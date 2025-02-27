@@ -1,9 +1,7 @@
 import re
-from collections import defaultdict
+from collections import defaultdict, Counter
 from itertools import chain
 from math import log
-from pprint import pprint
-
 
 def preprocess(text):
     return re.sub(r'[^\w\s]|(?<!\w)_', '', text).lower()
@@ -14,22 +12,14 @@ def search(docs: list, words: str) -> list:
     Searches for words in the documents and returns their IDs,
     ranked by the total count of word occurrences in the document text.
     """
-
-    result = []
     words = preprocess(words).split()
+    result = []
 
     for doc in docs:
         cleaned_text = preprocess(doc['text'])
-        word_count = 0
-
-        for word in words:
-            word_count += cleaned_text.split().count(word)
-
+        word_count = sum(Counter(cleaned_text.split())[word] for word in words)
         if word_count:
-            result.append({
-                'id': doc['id'],
-                'word_count': word_count
-            })
+            result.append({'id': doc['id'], 'word_count': word_count})
 
     result.sort(key=lambda x: x['word_count'], reverse=True)
 
@@ -39,20 +29,21 @@ def search(docs: list, words: str) -> list:
 def get_inverted_index(docs: list) -> dict:
     """
     Builds an inverted index from a list of documents.
-
-    An inverted index maps each unique word found in the documents to a list of 
-    document IDs where that word appears.
     """
-    result = {}
+    inverted_index = defaultdict(list)
 
-    words_pit = set(chain.from_iterable(
-            (preprocess(dic['text'])).split()
-        for dic in docs))
+    # Создаем индекс для каждого слова
+    for doc in docs:
+        words = preprocess(doc['text']).split()
+        word_counts = Counter(words)
+        
+        for word, count in word_counts.items():
+            if word not in inverted_index:
+                inverted_index[word] = [doc['id']]
+            else:
+                inverted_index[word].append(doc['id'])
 
-    for word in words_pit:
-        result[word] = search(docs, word)
-
-    return result
+    return dict(inverted_index)
 
 
 def get_tf(text: str) -> dict:
