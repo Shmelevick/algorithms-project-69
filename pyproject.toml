@@ -11,7 +11,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-name = "project-name"
+name = "algorithms-project-69"
 version = "0.1.0"
 description = "Описание проекта"
 authors = ["Твой ник <email@example.com>"]
