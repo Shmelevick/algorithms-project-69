@@ -51,3 +51,38 @@ def get_inverted_index(docs: list) -> dict:
         result[word] = search(docs, word)
 
     return result
+
+
+def get_tf(doc: list, all_terms:dict = None):
+    """ Compute TF """
+    cleaned_text = preprocess(doc['text'])
+    unique_terms = cleaned_text.split()
+
+    for word in unique_terms:
+        all_terms[word]['quant_in_doc'] += cleaned_text.split().count(word)
+    
+    return all_terms
+
+
+def get_tf_idf(docs):
+    """ Compute TF-IDF """
+    N
+
+    for doc in docs:
+        unique_words_in_doc = set(preprocess(doc['text']).split())
+        for word in unique_words_in_doc:
+
+        pass
+
+
+doc1 = "I can't shoot straight unless I've had a pint!"
+doc2 = "Don't shoot shoot shoot that thing at me."
+doc3 = "I'm your shooter."
+
+docs = [
+    {'id': 'doc1', 'text': doc1},
+    {'id': 'doc2', 'text': doc2},
+    {'id': 'doc3', 'text': doc3},
+]
+
+print(get_tf_idf(docs))
