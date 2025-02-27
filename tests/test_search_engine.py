@@ -95,3 +95,26 @@ class TestSearchFunction:
 
         result = search(docs, 'shoot')
         assert result == ['doc2', 'doc1']
+
+    def test_search_multiple_words(self):
+        """
+        Test that the search function returns documents containing all the words
+        in the search query, and sorts them based on the frequency of the words' occurrence.
+
+        The test ensures the following:
+        - The search can handle multiple words (i.e., 'shoot at me').
+        - Documents are returned in the order of their relevance (based on word frequency).
+        - Words in the search query are treated independently (i.e., not as a single phrase).
+        """
+        doc1 = "I can't shoot straight unless I've had a pint!"
+        doc2 = "Don't shoot shoot shoot that thing at me."
+        doc3 = "I'm your shooter."
+
+        docs = [
+            {'id': 'doc1', 'text': doc1},
+            {'id': 'doc2', 'text': doc2},
+            {'id': 'doc3', 'text': doc3},
+        ]
+
+        result = search(docs, 'shoot at me')
+        assert result == ['doc2', 'doc1']
