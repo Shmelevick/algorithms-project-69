@@ -1,90 +1,99 @@
 import re
-from math import log2
+import math
 
 
-def search(documents, query):
-    inverted_index = get_inverted_index(documents)
-    result_with_relevance = {}
-    query_tokens = tokenize(query)
-    for query_token in query_tokens:
-        documents_has_token = inverted_index.get(query_token)
-        if not documents_has_token:
-            continue
-        for document in documents_has_token:
-            result_with_relevance.setdefault(document['id'], 0)
-            token_tf_idf = get_tf_idf(document['id'], documents_has_token)
-            result_with_relevance[document['id']] += token_tf_idf
-    result = sorted(
-        result_with_relevance,
-        key=result_with_relevance.get,
-        reverse=True)
-    return result
+def compare_by_if_idf(item1, item2):
+    if item1['TFIDF'] < item2['TFIDF']:
+        return -1
+    elif item1['TFIDF'] == item2['TFIDF']:
+        return 0
+    else:
+        return 1
 
 
-def get_inverted_index(documents):
-    inverted_index = {}
-    tokens_all = set()
-    documents_as_tokens = []
-    for document in documents:
-        document_tokens = tokenize(document['text'])
-        current_document_tokenized = {
-            'id': document['id'],
-            'tokens': document_tokens
-        }
-        documents_as_tokens.append(current_document_tokenized)
-        tokens_all.update(document_tokens)
-    for token in tokens_all:
-        inverted_index[token] = []
-        idf = get_idf(documents_as_tokens, token)
-        for document in documents_as_tokens:
-            if token in document['tokens']:
-                tf = get_tf(document['tokens'], token)
-                current_document_with_relevance = {
-                    'id': document['id'],
-                    'tf-idf': round(tf * idf, 4)
-                }
-                inverted_index[token].append(current_document_with_relevance)
-    return inverted_index
+def quickSort(items, comparator, direction='asc'):
+    items_length = len(items)
+
+    if items_length == 0:
+        return []
+
+    index = items_length // 2
+    element = items[index]
+
+    smaller_items = [
+        items[i]
+        for i in range(items_length)
+        if comparator(items[i], element) < 0 and i != index
+    ]
+
+    bigger_items = [
+        items[i]
+        for i in range(items_length)
+        if comparator(items[i], element) >= 0 and i != index
+    ]
+
+    sorted_smaller_items = quickSort(smaller_items, comparator, direction)
+    sorted_bigger_items = quickSort(bigger_items, comparator, direction)
+
+    if direction == 'asc':
+        return [*sorted_smaller_items, element, *sorted_bigger_items]
+    return [*sorted_bigger_items, element, *sorted_smaller_items]
 
 
-def tokenize(text):
-    tokens = []
-    text_lines = text.split('\n')
-    for text_line in text_lines:
-        text_line_tokenized = [
-            get_term(token)
-            for token in text_line.split(' ') if token
-        ]
-        tokens.extend(text_line_tokenized)
-    return tokens
+def get_index(docs):
+    index = {}
+    docs_count = len(docs)
+    for doc in docs:
+        temp_dict = {}
+        number_words = 0
+        for token in doc['text'].split():
+            term = re.findall(r'\w+', token)
+            index_key = ''.join(term).lower()
+            if index_key not in temp_dict:
+                temp_dict[index_key] = 0
+            temp_dict[index_key] += 1
+            number_words += 1
+        for key, TF in temp_dict.items():
+            if key not in index:
+                index[key] = [{'id': doc['id'], 'TF': TF / number_words}]
+            else:
+                index[key].append({'id': doc['id'], 'TF': TF / number_words})
+    for key, list_doc in index.items():
+        docs_with_term = len(list_doc)
+#        IDF = math.log10( docs_count / docs_with_term )
+# Math.log2(1 + (docsCount - termCount + 1) / (termCount + 0.5));
+# docsCount - общее количество документов
+# termCount - количество документов, в которых встречается искомое слово
+# Это несколько "сглаженный" вариант основной формулы
+# линтер требует одновременно соблюдать W503 и W504
+        part_idf = (docs_count - docs_with_term + 1) / (docs_with_term + 0.5)
+        IDF = math.log2(1 + part_idf)
+        for doc in list_doc:
+            doc['TFIDF'] = doc['TF'] * IDF
+    return index
 
 
-def get_term(token):
-    return re.sub(r'[^\w\s]', '', token).lower()
-
-
-def get_tf_idf(document_id, documents_has_token):
-    filter_document_has_token = filter(
-        lambda document: document['id'] == document_id, documents_has_token
-    )
-    document_has_token = list(filter_document_has_token)[0]
-    tf_idf = document_has_token['tf-idf']
-    return tf_idf
-
-
-def get_tf(document_as_tokens, token):
-    document_tokens_count = len(document_as_tokens)
-    token_in_document_count = document_as_tokens.count(token)
-    tf = token_in_document_count / document_tokens_count
-    return tf
-
-
-def get_idf(documents_as_tokens, token):
-    documents_count = len(documents_as_tokens)
-    filter_documents_has_token = filter(
-        lambda document: token in document['tokens'], documents_as_tokens
-    )
-    documents_has_token = list(filter_documents_has_token)
-    documents_has_token_count = len(documents_has_token)
-    idf = log2((documents_count + 1) / (documents_has_token_count + 0.5))
-    return idf
+def search(docs: dict, search_pattern: str):
+    keys = []
+    index = get_index(docs)
+    search_results = {}
+    search_worlds = search_pattern.split()
+    for search_world in search_worlds:
+        term = re.findall(r'\w+', search_world)
+        search_world_lower = ''.join(term).lower()
+        if search_world_lower in index:
+            for doc in index[search_world_lower]:
+                if doc['id'] not in search_results:
+                    search_results[doc['id']] = doc['TFIDF']
+                else:
+                    search_results[doc['id']] += doc['TFIDF']
+    search_results_list = []
+    for doc, TFIDF in search_results.items():
+        search_results_list.append({'id': doc, 'TFIDF': TFIDF})
+    search_results = quickSort(search_results_list,
+                               compare_by_if_idf,
+                               'desc')
+    print(search_results)
+    for result in search_results:
+        keys.append(result['id'])
+    return keys
