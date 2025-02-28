@@ -1,5 +1,5 @@
 import pytest
-from search_engine.search_engine import preprocess, search, get_inverted_index
+from search_engine.search_engine import search, get_inverted_index
 
 docs = [
     {'id': 1, 'text': 'hello world'},
@@ -30,7 +30,8 @@ class TestSearchFunction:
         """
         Test the search function to ensure it finds a single word correctly.
         """
-        assert search(docs, word) == res, f"Expected {res}, but got {search(docs, word)}"
+        result = search(docs, word)
+        assert result == res, f"Expected {res}, but got {result}"
 
     @pytest.mark.parametrize(
         'docs, word, res',
@@ -44,7 +45,9 @@ class TestSearchFunction:
         """
         Test that the search function returns an empty list for absent words.
         """
-        assert search(docs, word) == res, f"Expected [], but got {search(docs, word)}"
+        assert search(docs, word) == res, f"Expected [], but got {
+            search(docs, word)
+        }"
 
     @pytest.mark.parametrize(
         'docs, word, res',
@@ -56,23 +59,32 @@ class TestSearchFunction:
     )
     def test_search_part_of_word_not_found(self, docs, word, res):
         """
-        Test that the search function does not return results for partial words.
+        Test that the search function does not return
+        results for partial words.
         """
-        assert search(docs, word) == res, f"Expected [], but got {search(docs, word)}"
+        assert search(docs, word) == res, f"Expected [], but got {
+            search(docs, word)
+        }"
 
     @pytest.mark.parametrize('word', ['', ' ', '\t', '\n'])
     def test_search_empty_word(self, word):
         """
-        Test that the search function returns an empty list for empty or whitespace-only queries.
+        Test that the search function returns an empty list for empty
+        or whitespace-only queries.
         """
-        assert search(docs, word) == [], f'Expected [], but got {search(docs, word)}'
+        assert search(docs, word) == [], f'Expected [], but got {
+            search(docs, word)
+        }'
 
 
     def test_search_word_with_punctuation(self):
         """
         Test that the search word can be with puntcuation
         """
-        doc1 = {'id': 'doc1', 'text': "I can't shoot straight unless I've had a pint!"}
+        doc1 = {
+            'id': 'doc1',
+            'text': "I can't shoot straight unless I've had a pint!"
+        }
         docs = [doc1]
 
         assert search(docs, 'pint') == ['doc1']
@@ -80,8 +92,9 @@ class TestSearchFunction:
         
     def test_search_ranging(self):
         """
-        Test that the search function returns results sorted by the frequency 
-        of the search word's occurrence in the document text.
+        Test that the search function returns results
+        sorted by the frequency of the search word's occurrence
+        in the document text.
         """
         doc1 = "I can't shoot straight unless I've had a pint!"
         doc2 = "Don't shoot shoot shoot that thing at me."
@@ -98,13 +111,16 @@ class TestSearchFunction:
 
     def test_search_multiple_words(self):
         """
-        Test that the search function returns documents containing all the words
-        in the search query, and sorts them based on the frequency of the words' occurrence.
+        Test that the search function returns documents
+        containing all the words in the search query, and
+        sorts them based on the frequency of the words' occurrence.
 
         The test ensures the following:
         - The search can handle multiple words (i.e., 'shoot at me').
-        - Documents are returned in the order of their relevance (based on word frequency).
-        - Words in the search query are treated independently (i.e., not as a single phrase).
+        - Documents are returned in the order of their relevance 
+        (based on word frequency).
+        - Words in the search query are treated independently 
+        (i.e., not as a single phrase).
         """
         doc1 = "I can't shoot straight unless I've had a pint!"
         doc2 = "Don't shoot shoot shoot that thing at me."
