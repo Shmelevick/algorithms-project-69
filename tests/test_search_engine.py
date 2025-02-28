@@ -45,9 +45,9 @@ class TestSearchFunction:
         """
         Test that the search function returns an empty list for absent words.
         """
-        assert search(docs, word) == res, f"Expected [], but got {
+        assert search(docs, word) == res, f"""Expected [], but got {
             search(docs, word)
-        }"
+        }"""
 
     @pytest.mark.parametrize(
         'docs, word, res',
@@ -72,9 +72,9 @@ class TestSearchFunction:
         Test that the search function returns an empty list for empty
         or whitespace-only queries.
         """
-        assert search(docs, word) == [], f'Expected [], but got {
+        assert search(docs, word) == [], f'''Expected [], but got {
             search(docs, word)
-        }'
+        }'''
 
 
     def test_search_word_with_punctuation(self):
