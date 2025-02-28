@@ -76,7 +76,6 @@ class TestSearchFunction:
             search(docs, word)
         }'''
 
-
     def test_search_word_with_punctuation(self):
         """
         Test that the search word can be with puntcuation
@@ -89,7 +88,7 @@ class TestSearchFunction:
 
         assert search(docs, 'pint') == ['doc1']
         assert search(docs, 'pint!') == ['doc1']
-        
+
     def test_search_ranging(self):
         """
         Test that the search function returns results
@@ -117,9 +116,9 @@ class TestSearchFunction:
 
         The test ensures the following:
         - The search can handle multiple words (i.e., 'shoot at me').
-        - Documents are returned in the order of their relevance 
+        - Documents are returned in the order of their relevance
         (based on word frequency).
-        - Words in the search query are treated independently 
+        - Words in the search query are treated independently
         (i.e., not as a single phrase).
         """
         doc1 = "I can't shoot straight unless I've had a pint!"
@@ -135,7 +134,6 @@ class TestSearchFunction:
         result = search(docs, 'shoot at me')
         assert result == ['doc2', 'doc1']
 
-    
     def test_get_inverted_index(self):
         doc1 = {'id': 'doc1', 'text': 'some text'}
         doc2 = {'id': 'doc2', 'text': 'some text too'}
@@ -146,5 +144,5 @@ class TestSearchFunction:
             'text': ['doc1', 'doc2'],
             'too': ['doc2']
         }
-        
+
         assert get_inverted_index(docs) == index
