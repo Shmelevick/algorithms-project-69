@@ -62,9 +62,9 @@ class TestSearchFunction:
         Test that the search function does not return
         results for partial words.
         """
-        assert search(docs, word) == res, f"Expected [], but got {
+        assert search(docs, word) == res, f"""Expected [], but got {
             search(docs, word)
-        }"
+        }"""
 
     @pytest.mark.parametrize('word', ['', ' ', '\t', '\n'])
     def test_search_empty_word(self, word):
